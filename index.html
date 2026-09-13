@@ -171,25 +171,44 @@
           })
           .searchSchool(code);
       }
-      function searchCode() {
+      </script>
+      <script>
+function searchCode() {
   var code = document.getElementById("codeInput").value;
-  var webAppUrl = "https://script.google.com/macros/s/AKfycbwyBCBOnCHUTv8Qs6rdtdFKD8aZwnRUEsDcpoQ3Fnnu4P277_cL4aJgv85j-jpjOA5l/exec";
+  var statusElem = document.getElementById("status");
+  
+  if (!code) {
+    alert("Please enter a school code!");
+    return;
+  }
 
-  document.getElementById("status").innerText = "തിരയുന്നു... ദയവായി കാത്തിരിക്കൂ...";
+  statusElem.innerText = "തിരയുന്നു... ദയവായി കാത്തിരിക്കൂ...";
 
-  fetch(webAppUrl + "?code=" + encodeURIComponent(code))
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.url) {
-        window.location.href = data.url;
-      } else {
-        document.getElementById("status").innerText = "ഡാറ്റ കണ്ടെത്താനായില്ല!";
-      }
-    })
-    .catch(error => {
-      document.getElementById("status").innerText = "Error fetching data: " + error.message;
-    });
+  var webAppUrl = "https://script.google.com/macros/s/AKfycbwyBCBOnCHUTv8Qs6rdtdFKD8aZwnRUEsDcpoQ3Fnnu4P277_cL4aJgv85j-jpjOA5l/exec?code=" + encodeURIComponent(code);
+
+  fetch(webAppUrl, {
+    method: "GET",
+    redirect: "follow"
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response failed");
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data && data.url) {
+      window.location.href = data.url;
+    } else {
+      statusElem.innerText = "ഡാറ്റ കണ്ടെത്താനായില്ല!";
+    }
+  })
+  .catch(error => {
+    console.error("Fetch Error:", error);
+    statusElem.innerText = "Error: " + error.message;
+  });
 }
-    </script>
+</script>
+    
   </body>
 </html>
