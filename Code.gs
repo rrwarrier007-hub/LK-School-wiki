@@ -1,31 +1,23 @@
-function doGet() {
-  return HtmlService.createTemplateFromFile('index')
-    .evaluate()
-    .setTitle('Little Kites School Wiki Search')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-}
-
-function searchSchool(schoolCode) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  
-  // Clean user input
-  var searchCode = String(schoolCode).trim();
-  
-  for (var i = 1; i < data.length; i++) {
-    var code = String(data[i][0]).trim(); // Column A: School Code
+function doGet(e) {
+  // Check if a code parameter was sent from GitHub Pages
+  if (e && e.parameter && e.parameter.code) {
+    var schoolCode = e.parameter.code.trim();
     
-    if (code === searchCode) {
-      return {
-        success: true,
-        code: data[i][0],
-        name: data[i][1],
-        subdistrict: data[i][2],
-        management: data[i][3],
-        link: data[i][4] // Column E: Little Kites Link
-      };
-    }
+    // Replace this function call with your actual search logic
+    var targetUrl = getWikiUrl(schoolCode); 
+    
+    var output = JSON.stringify({ url: targetUrl });
+    
+    return ContentService.createTextOutput(output)
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
-  return { success: false, message: 'ഈ സ്കൂൾ കോഡ് കണ്ടെത്തിയില്ല!' };
+  // Default HTML output for direct Web App access
+  return HtmlService.createHtmlOutputFromFile('index');
+}
+
+// Ensure your existing search function returns the URL string or null
+function getWikiUrl(code) {
+  // Your Google Sheet lookup logic here
+  // e.g., return "https://schoolwiki.in/..."
 }
